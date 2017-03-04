@@ -5,8 +5,8 @@ Hello World, Linux Kernel Module
 Prepare
 -------
 
-Get the source code that is used for your current running system.  After that,
-move to the directory and do `$ make modules_preapre`.
+Get the linux kernel source code that is used for your current running system.
+After that, move to the directory and do `$ make modules_preapre`.
 
 
 Build
