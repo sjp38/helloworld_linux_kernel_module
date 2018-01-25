@@ -11,9 +11,9 @@ $ make -C <path to linux build directory> M=$PWD
 
 `path to linux build directory` is a path to the directory that you used for
 build or `make modules_prepare` of the linux on your system.  It could be
-different with linux source code directory if you used `O=` option.  Or, it can
-be simply be altered with `/lib/modules/$(shell uname -r)/build M=$(PWD)
-modules` if the directory is not changed after build and installation.
+different with linux source code directory if you used `make` with `O=` option.
+Or, it can be simply be altered with `/lib/modules/$(shell uname -r)/build` if
+the directory is not changed after build and installation.
 
 
 Load & Unload
