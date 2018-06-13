@@ -16,7 +16,7 @@ $ make
 Load & Unload
 -------------
 
-To load the module, `# insmod ./hello.ko.  To unload, `# rmmod hello`.
+To load the module, `# insmod ./hello.ko`.  To unload, `# rmmod hello`.
 
 
 For more information, read the kernel documentation about this topic:
