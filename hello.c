@@ -2,6 +2,17 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
+static void kill_time(void)
+{
+	unsigned long i;
+	volatile unsigned long sum;
+
+	for (i = 0, sum = 0; i < 500000000; i++)
+		sum += i;
+
+	pr_info("sj: time killed for sum %lu\n", sum);
+}
+
 /*
  * Count cpu time of this kernel thread.
  *
@@ -11,17 +22,12 @@
 
 void count_cputime(void)
 {
-	unsigned long i;
-	volatile unsigned long sum;
-
 	pr_info("sj: Hello world\n");
 	pr_info("sj: [before] utime %llu, stime %llu, gtime %llu\n",
 			current->utime, current->stime, current->gtime);
 
-	for (i = 0, sum = 0; i < 500000000; i++)
-		sum += i;
+	kill_time();
 
-	pr_info("sj: sum is %lu\n", sum);
 	pr_info("sj: [after] utime %llu, stime %llu, gtime %llu\n",
 			current->utime, current->stime, current->gtime);
 }
