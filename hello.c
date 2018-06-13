@@ -32,6 +32,38 @@ void count_cputime(void)
 			current->utime, current->stime, current->gtime);
 }
 
+/*
+ * Use kthread to run a task on an isolated CPU
+ */
+#include <linux/kthread.h>
+
+struct completion foo_completion;
+
+int foo(void *info)
+{
+
+	kill_time();
+	pr_info("sj: %s ran on cpu %d\n", __func__, smp_processor_id());
+	complete(&foo_completion);
+
+	return 0;
+}
+
+int run_kthread_on_cpu(void)
+{
+	struct task_struct *t;
+
+	t = kthread_create(foo, NULL, "foo");
+	kthread_bind(t, 42);
+	if (!t)
+		return -EINVAL;
+	init_completion(&foo_completion);
+	wake_up_process(t);
+	wait_for_completion(&foo_completion);
+
+	return 0;
+}
+
 static int hello_init(void)
 {
 	pr_info("sj: Hello world\n");
