@@ -34,14 +34,14 @@ void count_cputime(void)
 			current->utime, current->stime, current->gtime);
 }
 
-static int modinit(void)
+static int __init modinit(void)
 {
 	pr_info("sj: Hello world\n");
 	count_cputime();
 	return 0;
 }
 
-static void modexit(void)
+static void __exit modexit(void)
 {
 	pr_info("sj: Goodbye world\n");
 }

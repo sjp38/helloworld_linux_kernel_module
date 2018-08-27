@@ -4,13 +4,13 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
-static int hello_init(void)
+static int __init hello_init(void)
 {
 	pr_info("sj: Hello world\n");
 	return 0;
 }
 
-static void hello_exit(void)
+static void __exit hello_exit(void)
 {
 	pr_info("sj: Goodbye world\n");
 }

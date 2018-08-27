@@ -47,14 +47,14 @@ int run_kthread_on_cpu(void)
 	return 0;
 }
 
-static int hello_init(void)
+static int __init hello_init(void)
 {
 	pr_info("sj: Hello world\n");
 	run_kthread_on_cpu();
 	return 0;
 }
 
-static void hello_exit(void)
+static void __exit hello_exit(void)
 {
 	pr_info("sj: Goodbye world\n");
 }
