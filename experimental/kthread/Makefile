@@ -1,6 +1,6 @@
 obj-m := kthread.o
 
-kthread.ko:
+kthread.ko: kthread.c
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 clean:

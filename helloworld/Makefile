@@ -1,6 +1,6 @@
 obj-m := hello.o
 
-hello.ko:
+hello.ko: hello.c
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 clean:
