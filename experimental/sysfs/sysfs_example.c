@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * NOTE: The code is mainly stalled from samples/kobject/kobject-example.c in
+ * the Linux source tree.
+ */
 #define pr_fmt(fmt) "sysfs-exmaple: " fmt
 
 #include <linux/kobject.h>
