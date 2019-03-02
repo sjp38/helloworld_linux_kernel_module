@@ -71,4 +71,4 @@ module_exit(sysfs_example_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("SeongJae Park");
-MODULE_DESCRIPTION("An example for pcpu variable");
+MODULE_DESCRIPTION("An example for sysfs usage");
