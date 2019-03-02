@@ -47,20 +47,20 @@ int run_kthread_on_cpu(void)
 	return 0;
 }
 
-static int __init hello_init(void)
+static int __init kthread_example_init(void)
 {
 	pr_info("sj: Hello world\n");
 	run_kthread_on_cpu();
 	return 0;
 }
 
-static void __exit hello_exit(void)
+static void __exit kthread_example_exit(void)
 {
 	pr_info("sj: Goodbye world\n");
 }
 
-module_init(hello_init);
-module_exit(hello_exit);
+module_init(kthread_example_init);
+module_exit(kthread_example_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("SeongJae Park");
