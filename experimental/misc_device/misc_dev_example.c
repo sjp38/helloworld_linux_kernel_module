@@ -7,16 +7,51 @@
 #include <linux/module.h>
 #include <linux/uaccess.h>
 
+static char *magicword = "xxxxxxxxxxxx";
+static const size_t len_magicword = 12;
+
+/*
+ * When the character device node is read from, your assigned id is returned to
+ * the caller.
+ */
 static ssize_t mde_read(struct file *file, char __user *buf,
 		size_t count, loff_t *ppos)
 {
-	return -EINVAL;
+	if (*ppos >= len_magicword)
+		return 0;
+
+	if (*ppos + count > len_magicword)
+		count = len_magicword - *ppos;
+
+	if (copy_to_user(buf, magicword + *ppos, count))
+		return -EINVAL;
+	*ppos += count;
+
+	return count;
 }
 
+/*
+ * When the character device node is written to, the data sent to the kernel
+ * needs to be checked.  If it matches your assigned id, then return a correct
+ * write return value.  If the value does not match your assigned id, return
+ * the "invalid value" error value.
+ */
 static ssize_t mde_write(struct file *file, const char __user *buf,
 		size_t count, loff_t *ppos)
 {
-	return -EINVAL;
+	char input[256];
+
+	if (*ppos >= len_magicword)
+		return 0;
+
+	if (*ppos + count > len_magicword)
+		count = len_magicword - *ppos;
+
+	copy_from_user(input, buf, count);
+	if (strncmp(magicword + *ppos, input, count))
+		return -EINVAL;
+	*ppos += count;
+	return count;
 }
 
 static struct file_operations mde_dev_ops = {
