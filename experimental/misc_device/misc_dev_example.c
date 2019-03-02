@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt) "misc_dev_example: " fmt
 
 #include <linux/fs.h>
