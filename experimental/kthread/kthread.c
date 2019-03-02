@@ -64,4 +64,4 @@ module_exit(hello_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("SeongJae Park");
-MODULE_DESCRIPTION("A Hello World Module");
+MODULE_DESCRIPTION("An example for kthread usage");
