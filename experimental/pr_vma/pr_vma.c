@@ -8,7 +8,46 @@
 #include <linux/slab.h>
 #include <linux/sched/signal.h>
 
-static void validate_vmas_order(void)
+static void validate_vmas_mmap_order(void)
+{
+	struct task_struct *task;
+	struct mm_struct *mm;
+	unsigned long prev_end;
+	bool legal;
+
+	for_each_process(task) {
+		struct vm_area_struct *vma;
+
+		legal = true;
+		prev_end = 0;
+		mm = task->mm;
+		if (!mm)
+			continue;
+		down_read(&mm->mmap_sem);
+
+		for (vma = mm->mmap; vma; vma = vma->vm_next) {
+			if (vma->vm_start > vma->vm_end) {
+				pr_err("Start %lx > end %lx\n",
+						vma->vm_start, vma->vm_end);
+				legal = false;
+				break;
+			}
+
+			if (prev_end > vma->vm_start) {
+				pr_err("Prev end %lx < start %lx\n",
+						prev_end, vma->vm_start);
+				legal = false;
+				break;
+			}
+			prev_end = vma->vm_end;
+		}
+		up_read(&mm->mmap_sem);
+		if (!legal)
+			break;
+	}
+}
+
+static void validate_vmas_rbtree_order(void)
 {
 	struct task_struct *task;
 	struct mm_struct *mm;
@@ -79,7 +118,8 @@ static void pr_vmas(void)
 static int __init pr_vma_init(void)
 {
 	pr_info("init\n");
-	validate_vmas_order();
+	validate_vmas_mmap_order();
+	validate_vmas_rbtree_order();
 	return 0;
 }
 
