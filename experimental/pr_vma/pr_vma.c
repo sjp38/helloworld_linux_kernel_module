@@ -8,7 +8,7 @@
 #include <linux/slab.h>
 #include <linux/sched/signal.h>
 
-static void validate_vmas_mmap_order(void)
+static bool validate_vmas_mmap_order(void)
 {
 	struct task_struct *task;
 	struct mm_struct *mm;
@@ -43,11 +43,12 @@ static void validate_vmas_mmap_order(void)
 		}
 		up_read(&mm->mmap_sem);
 		if (!legal)
-			break;
+			return false;
 	}
+	return true;
 }
 
-static void validate_vmas_rbtree_order(void)
+static bool validate_vmas_rbtree_order(void)
 {
 	struct task_struct *task;
 	struct mm_struct *mm;
@@ -87,8 +88,9 @@ static void validate_vmas_rbtree_order(void)
 		}
 		up_read(&mm->mmap_sem);
 		if (!legal)
-			break;
+			return false;
 	}
+	return true;
 }
 
 static void pr_vmas(void)
@@ -117,8 +119,15 @@ static void pr_vmas(void)
 static int __init pr_vma_init(void)
 {
 	pr_info("init\n");
-	validate_vmas_mmap_order();
-	validate_vmas_rbtree_order();
+	if (!validate_vmas_mmap_order()) {
+		pr_err("mmap order invalid\n");
+		return -1;
+	}
+	if (!validate_vmas_rbtree_order()) {
+		pr_err("rbtree order invalid\n");
+		return -1;
+	}
+	pr_vmas();
 	return 0;
 }
 
