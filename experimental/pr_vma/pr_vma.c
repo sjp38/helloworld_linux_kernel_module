@@ -11,23 +11,39 @@
 static void pr_vmas(void)
 {
 	struct task_struct *task;
-	struct vm_area_struct *vma;
 	struct mm_struct *mm;
+	struct rb_root *root;
+	struct rb_node *nd;
+	unsigned long prev_end;
 
 	for_each_process(task) {
+		prev_end = 0;
 		pr_info("%s [%d]\n", task->comm, task->pid);
 		mm = task->mm;
 		if (!mm)
 			continue;
 		down_read(&mm->mmap_sem);
-		vma = mm->mmap;
 
-		while (vma) {
-			pr_info("%012lx-%012lx", vma->vm_start, vma->vm_end);
+		root = &mm->mm_rb;
+		for (nd = rb_first(root); nd; nd = rb_next(nd)) {
+			struct vm_area_struct *vma;
+
+			vma = rb_entry(nd, struct vm_area_struct, vm_rb);
+			if (vma->vm_start > vma->vm_end) {
+				pr_err("Start %lx > end %lx\n",
+						vma->vm_start, vma->vm_end);
+				break;
+			}
+
+			if (prev_end > vma->vm_start) {
+				pr_err("Prev end %lx < start %lx\n",
+						prev_end, vma->vm_start);
+				break;
+			}
+			prev_end = vma->vm_end;
 			vma = vma->vm_next;
 		}
 		up_read(&mm->mmap_sem);
-		pr_info("\n");
 	}
 }
 
