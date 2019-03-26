@@ -8,15 +8,17 @@
 #include <linux/slab.h>
 #include <linux/sched/signal.h>
 
-static void pr_vmas(void)
+static void validate_vmas_order(void)
 {
 	struct task_struct *task;
 	struct mm_struct *mm;
 	struct rb_root *root;
 	struct rb_node *nd;
 	unsigned long prev_end;
+	bool legal;
 
 	for_each_process(task) {
+		legal = true;
 		prev_end = 0;
 		pr_info("%s [%d]\n", task->comm, task->pid);
 		mm = task->mm;
@@ -32,25 +34,29 @@ static void pr_vmas(void)
 			if (vma->vm_start > vma->vm_end) {
 				pr_err("Start %lx > end %lx\n",
 						vma->vm_start, vma->vm_end);
+				legal = false;
 				break;
 			}
 
 			if (prev_end > vma->vm_start) {
 				pr_err("Prev end %lx < start %lx\n",
 						prev_end, vma->vm_start);
+				legal = false;
 				break;
 			}
 			prev_end = vma->vm_end;
 			vma = vma->vm_next;
 		}
 		up_read(&mm->mmap_sem);
+		if (!legal)
+			break;
 	}
 }
 
 static int __init pr_vma_init(void)
 {
 	pr_info("init\n");
-	pr_vmas();
+	validate_vmas_order();
 	return 0;
 }
 
