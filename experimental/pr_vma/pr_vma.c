@@ -59,7 +59,6 @@ static void validate_vmas_rbtree_order(void)
 	for_each_process(task) {
 		legal = true;
 		prev_end = 0;
-		pr_info("%s [%d]\n", task->comm, task->pid);
 		mm = task->mm;
 		if (!mm)
 			continue;
