@@ -6,10 +6,35 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+#include <linux/sched/signal.h>
+
+static void pr_vmas(void)
+{
+	struct task_struct *task;
+	struct vm_area_struct *vma;
+	struct mm_struct *mm;
+
+	for_each_process(task) {
+		pr_info("%s [%d]\n", task->comm, task->pid);
+		mm = task->mm;
+		if (!mm)
+			continue;
+		down_read(&mm->mmap_sem);
+		vma = mm->mmap;
+
+		while (vma) {
+			pr_info("%012lx-%012lx", vma->vm_start, vma->vm_end);
+			vma = vma->vm_next;
+		}
+		up_read(&mm->mmap_sem);
+		pr_info("\n");
+	}
+}
 
 static int __init pr_vma_init(void)
 {
 	pr_info("init\n");
+	pr_vmas();
 	return 0;
 }
 
